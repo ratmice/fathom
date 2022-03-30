@@ -107,6 +107,8 @@ impl<'arena> RigidEnv<'arena> {
 
         define_prim(VoidType, universe());
 
+        define_prim(BoolType, universe());
+
         define_prim(U8Type, universe());
         define_prim(U16Type, universe());
         define_prim(U32Type, universe());
@@ -137,6 +139,7 @@ impl<'arena> RigidEnv<'arena> {
             )),
         );
         define_prim(FormatFail, format_type());
+        define_prim(FormatBool, format_type());
         define_prim(FormatU8, format_type());
         define_prim(FormatU16Be, format_type());
         define_prim(FormatU16Le, format_type());
@@ -707,6 +710,35 @@ impl<'interner, 'arena> Context<'interner, 'arena> {
                     }
                 }
             }
+            Pattern::BooleanLiteral(range, boolean) => {
+                let constant = match expected_type.match_prim_spine() {
+                    Some((Prim::BoolType, [])) => {
+                         match *boolean {
+                            true => Some(Const::Bool(true)),
+                            false => Some(Const::Bool(false)),
+                        }
+                    }
+                    _ => {
+                        // FIXME: Error type
+                        self.push_message(Message::NumericLiteralNotSupported { range: *range });
+                        None
+                    }
+                };
+
+                match constant {
+                    Some(constant) => (
+                        CheckedPattern::Const(*range, constant),
+                        expected_type.clone(),
+                    ),
+                    None => {
+                        let source = FlexSource::ReportedErrorType(*range);
+                        let r#type = self.push_flexible_value(source, Arc::new(Value::Universe));
+
+                        (CheckedPattern::ReportedError(*range), r#type)
+                    }
+                }
+
+            }
             Pattern::NumberLiteral(range, number) => {
                 let constant = match expected_type.match_prim_spine() {
                     Some((Prim::U8Type, [])) => {
@@ -799,6 +831,13 @@ impl<'interner, 'arena> Context<'interner, 'arena> {
             }
             Pattern::StringLiteral(range, _) => {
                 self.push_message(Message::AmbiguousStringLiteral { range: *range });
+                let source = FlexSource::ReportedErrorType(*range);
+                let r#type = self.push_flexible_value(source, Arc::new(Value::Universe));
+                (CheckedPattern::ReportedError(*range), r#type)
+            }
+            Pattern::BooleanLiteral(range, _) => {
+                // FIXME: error
+                self.push_message(Message::AmbiguousNumericLiteral { range: *range });
                 let source = FlexSource::ReportedErrorType(*range);
                 let r#type = self.push_flexible_value(source, Arc::new(Value::Universe));
                 (CheckedPattern::ReportedError(*range), r#type)
@@ -1364,6 +1403,12 @@ impl<'interner, 'arena> Context<'interner, 'arena> {
             }
             // TODO: Stuck macros + unification like in Klister?
             Term::NumberLiteral(range, _) => {
+                self.push_message(Message::AmbiguousNumericLiteral { range: *range });
+                self.synth_reported_error(*range)
+            }
+            // TODO: Stuck macros + unification like in Klister?
+            Term::BooleanLiteral(range, _) => {
+                // FIXME: Error
                 self.push_message(Message::AmbiguousNumericLiteral { range: *range });
                 self.synth_reported_error(*range)
             }

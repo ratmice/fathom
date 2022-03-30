@@ -32,6 +32,8 @@ pub enum Pattern<'arena, Range> {
     ),
     /// String literal patterns
     StringLiteral(Range, StringId),
+    /// Boolean literal patterns
+    BooleanLiteral(Range, bool),
     /// Number literal patterns
     NumberLiteral(Range, StringId),
     // TODO: Record literal patterns
@@ -45,6 +47,7 @@ impl<'arena, Range: Clone> Pattern<'arena, Range> {
             | Pattern::Placeholder(range)
             | Pattern::Ann(range, _, _)
             | Pattern::StringLiteral(range, _)
+            | Pattern::BooleanLiteral(range, _)
             | Pattern::NumberLiteral(range, _) => range.clone(),
         }
     }
@@ -116,6 +119,8 @@ pub enum Term<'arena, Range> {
     ArrayLiteral(Range, &'arena [Term<'arena, Range>]),
     /// String literal.
     StringLiteral(Range, StringId),
+    /// Boolean literals.
+    BooleanLiteral(Range, bool),
     /// Number literals.
     NumberLiteral(Range, StringId),
     /// Record format.
@@ -147,6 +152,7 @@ impl<'arena, Range: Clone> Term<'arena, Range> {
             | Term::RecordElim(range, _, _)
             | Term::ArrayLiteral(range, _)
             | Term::StringLiteral(range, _)
+            | Term::BooleanLiteral(range, _)
             | Term::NumberLiteral(range, _)
             | Term::FormatRecord(range, _)
             | Term::FormatOverlap(range, _)

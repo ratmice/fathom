@@ -82,6 +82,7 @@ impl<'arena, 'env> Context<'arena, 'env> {
         match self.elim_context().force(format).as_ref() {
             Value::Stuck(Head::Prim(prim), slice) => match (*prim, &slice[..]) {
                 (Prim::FormatSucceed, [_, Fun(r#elem)]) => Ok(r#elem.clone()),
+                // (Prim::FormatBool, []) => read_const(reader, Const::Bool, read_bool), // FIXME: I'm not sure this actually makes sense
                 (Prim::FormatU8, []) => read_const(reader, Const::U8, read_u8),
                 (Prim::FormatU16Be, []) => read_const(reader, Const::U16, read_u16be),
                 (Prim::FormatU16Le, []) => read_const(reader, Const::U16, read_u16le),
@@ -240,6 +241,11 @@ fn read_const<'arena, T>(
 ) -> io::Result<ArcValue<'arena>> {
     let data = read(reader)?;
     Ok(Arc::new(Value::Const(wrap_const(data))))
+}
+
+fn read_bool(reader: &mut dyn SeekRead) -> io::Result<bool> {
+    let [byte] = read_array(reader)?;
+    Ok(byte != 0)
 }
 
 fn read_u8(reader: &mut dyn SeekRead) -> io::Result<u8> {

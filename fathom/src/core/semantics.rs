@@ -620,6 +620,7 @@ impl<'arena, 'env> ElimContext<'arena, 'env> {
                 match (prim, &spine[..]) {
                     (Prim::FormatSucceed, [Elim::Fun(r#elem), _]) => r#elem.clone(),
                     (Prim::FormatFail, []) => Arc::new(Value::prim(Prim::VoidType, [])),
+                    (Prim::FormatBool, []) => Arc::new(Value::prim(Prim::BoolType, [])),
                     (Prim::FormatU8, []) => Arc::new(Value::prim(Prim::U8Type, [])),
                     (Prim::FormatU16Be, []) => Arc::new(Value::prim(Prim::U16Type, [])),
                     (Prim::FormatU16Le, []) => Arc::new(Value::prim(Prim::U16Type, [])),

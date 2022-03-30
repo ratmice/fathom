@@ -179,6 +179,9 @@ def_prims! {
     /// Void type.
     VoidType => "Void",
 
+    /// Type of boolean values.
+    BoolType => "Bool",
+
     /// Type of unsigned, 8-bit integers.
     U8Type => "U8",
     /// Type of unsigned, 16-bit integers.
@@ -218,6 +221,8 @@ def_prims! {
     FormatSucceed => "succeed",
     /// A format that always fails to parse.
     FormatFail => "fail",
+    /// Boolean formats.
+    FormatBool => "bool",
     /// Unsigned, 8-bit integer formats.
     FormatU8 => "u8",
     /// Unsigned, 16-bit integer formats (big-endian).
@@ -354,6 +359,7 @@ def_prims! {
 /// Constants
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Const {
+    Bool(bool),
     U8(u8),
     U16(u16),
     U32(u32),

@@ -17,6 +17,8 @@ extern {
         "hole" => Token::Hole(<&'source str>),
         "string literal" => Token::StringLiteral(<&'source str>),
         "number literal" => Token::NumberLiteral(<&'source str>),
+        "true" => Token::True,
+        "false" => Token::False,
 
         "fun" => Token::KeywordFun,
         "let" => Token::KeywordLet,
@@ -61,6 +63,8 @@ AtomicPattern : Pattern<'arena, ByteRange> = {
     <start: @L> "_" <end: @R> => Pattern::Placeholder(ByteRange::new(start, end)),
     <start: @L> <string: StringLiteral> <end: @R> => Pattern::StringLiteral(ByteRange::new(start, end), string),
     <start: @L> <number: NumberLiteral> <end: @R> => Pattern::NumberLiteral(ByteRange::new(start, end), number),
+    <start: @L> "true" <end: @R> => Pattern::BooleanLiteral(ByteRange::new(start, end), true),
+    <start: @L> "false" <end: @R> => Pattern::BooleanLiteral(ByteRange::new(start, end), false),
 };
 
 pub Term: Term<'arena, ByteRange> = {
@@ -141,6 +145,8 @@ AtomicTerm: Term<'arena, ByteRange> = {
     },
     <start: @L> "Type" <end: @R> => Term::Universe(ByteRange::new(start, end)),
     <start: @L> <string: StringLiteral> <end: @R> => Term::StringLiteral(ByteRange::new(start, end), string),
+    <start: @L> "true" <end: @R> => Term::BooleanLiteral(ByteRange::new(start, end), true),
+    <start: @L> "false" <end: @R> => Term::BooleanLiteral(ByteRange::new(start, end), false),
     <start: @L> <number: NumberLiteral> <end: @R> => Term::NumberLiteral(ByteRange::new(start, end), number),
     <start: @L> "{" "}" <end: @R> => Term::UnitLiteral(ByteRange::new(start, end)),
     <start: @L> "{" <first: (<RangedName> ":" <Term>)> <type_fields: ("," <RangedName> ":" <Term>)*> ","?  "}" <end: @R> => {

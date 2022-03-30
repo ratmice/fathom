@@ -69,6 +69,18 @@ impl<'interner, 'arena, 'env> Context<'interner, 'arena, 'env> {
         }
     }
 
+    fn check_boolean_literal(&mut self, boolean: bool) -> Term<'arena, ()> {
+        let boolean = match boolean {
+            true => self.interner.borrow_mut().get_or_intern("true"),
+            false => self.interner.borrow_mut().get_or_intern("false"),
+        };
+        Term::NumberLiteral((), boolean)
+    }
+
+    fn check_boolean_pattern(&mut self, boolean: bool) -> Pattern<'arena, ()> {
+        Pattern::BooleanLiteral((), boolean)
+    }
+
     fn check_number_literal<T: std::fmt::Display>(&mut self, number: T) -> Term<'arena, ()> {
         let number = self.interner.borrow_mut().get_or_intern(number.to_string());
         Term::NumberLiteral((), number)
@@ -81,6 +93,7 @@ impl<'interner, 'arena, 'env> Context<'interner, 'arena, 'env> {
 
     fn check_constant_pattern(&mut self, r#const: &core::Const) -> Pattern<'arena, ()> {
         match r#const {
+            core::Const::Bool(boolean) => self.check_boolean_pattern(*boolean),
             core::Const::U8(number) => self.check_number_pattern(number),
             core::Const::U16(number) => self.check_number_pattern(number),
             core::Const::U32(number) => self.check_number_pattern(number),
@@ -101,6 +114,18 @@ impl<'interner, 'arena, 'env> Context<'interner, 'arena, 'env> {
         let name = self.interner.borrow_mut().get_or_intern_static(prim.name());
         Term::Name((), name)
     }
+
+    fn synth_boolean_literal(
+        &mut self,
+        boolean: bool,
+        prim_type: core::Prim,
+    ) -> Term<'arena, ()> {
+        let expr = self.check_boolean_literal(boolean);
+        let r#type = self.synth_prim(prim_type);
+
+        Term::Ann((), self.scope.to_scope(expr), self.scope.to_scope(r#type))
+    }
+
 
     fn synth_number_literal<T: std::fmt::Display>(
         &mut self,
@@ -167,6 +192,7 @@ impl<'interner, 'arena, 'env> Context<'interner, 'arena, 'env> {
             }
             core::Term::FormatRecord(labels, _) if labels.is_empty() => Term::UnitLiteral(()),
             core::Term::Const(r#const) => match r#const {
+                core::Const::Bool(boolean) => self.check_boolean_literal(*boolean),
                 core::Const::U8(number) => self.check_number_literal(number),
                 core::Const::U16(number) => self.check_number_literal(number),
                 core::Const::U32(number) => self.check_number_literal(number),
@@ -355,6 +381,7 @@ impl<'interner, 'arena, 'env> Context<'interner, 'arena, 'env> {
             }
             core::Term::Prim(prim) => self.synth_prim(*prim),
             core::Term::Const(r#const) => match r#const {
+                core::Const::Bool(boolean) => self.synth_boolean_literal(*boolean, core::Prim::BoolType),
                 core::Const::U8(number) => self.synth_number_literal(number, core::Prim::U8Type),
                 core::Const::U16(number) => self.synth_number_literal(number, core::Prim::U16Type),
                 core::Const::U32(number) => self.synth_number_literal(number, core::Prim::U32Type),
