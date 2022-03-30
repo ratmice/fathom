@@ -801,9 +801,9 @@ let long_horizontal_metric = {
 let horizontal_metrics = fun (number_of_long_horizontal_metrics : U16) => fun (num_glyphs : U16) => {
     /// Long horizontal metrics, indexed by the glyph ID.
     h_metrics <- array16 number_of_long_horizontal_metrics long_horizontal_metric,
-    // /// Left side bearings for glyph IDs greater than or equal to the
-    // /// `number_of_long_horizontal_metrics`.
-    // left_side_bearings <- array16 (num_glyphs - number_of_long_horizontal_metrics) s16be, // TODO: Subtraction
+    /// Left side bearings for glyph IDs greater than or equal to the
+    /// `number_of_long_horizontal_metrics`.
+    left_side_bearings <- array16 (u16_sub num_glyphs number_of_long_horizontal_metrics) s16be,
 };
 
 
