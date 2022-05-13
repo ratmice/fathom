@@ -77,6 +77,12 @@ impl<'arena, 'env> Context<'arena, 'env> {
 
                 Ok(Arc::new(Value::RecordLit(labels, exprs)))
             }
+            Value::FormatCond(_label, format, cond) => {
+                let expr = self.read_format(reader, &format)?;
+
+                // TODO: apply the result to the cond to determine what to do
+                Ok(expr)
+            }
             Value::FormatOverlap(labels, formats) => {
                 let initial_pos = reader.stream_position()?;
                 let mut max_pos = initial_pos;
