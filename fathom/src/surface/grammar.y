@@ -48,11 +48,15 @@ TermSeq
 | /* Empty */
 ;
 
-NonEmptyAnn: Name ":" Term | NonEmptyAnn "," MaybeAnn;
-MaybeAnn: Name ":" Term | /* Empty */;
 
-NonEmptyAssign: Name "=" Term | NonEmptyAssign "," MaybeAssign;
-MaybeAssign: Name "=" Term | /* Empty */;
+NonEmptyAnn: Name ":" Term NonEmptyAnnSeq;
+MaybeNonEmptyAnn: Name ":" Term NonEmptyAnnSeq | /* Empty */;
+NonEmptyAnnSeq: "," MaybeNonEmptyAnn | /* Empty */;
 
-NonEmptyBackArrow: Name "<-" Term | NonEmptyBackArrow "," MaybeBackArrow;
-MaybeBackArrow: Name "<-" Term | /* Empty */;
+NonEmptyAssign: Name "=" Term NonEmptyAssignSeq;
+MaybeNonEmptyAssign: Name "=" Term NonEmptyAssignSeq | /* Empty */;
+NonEmptyAssignSeq: "," MaybeNonEmptyAssign | /* Empty */;
+
+NonEmptyBackArrow: Name "<-" Term NonEmptyBackArrowSeq;
+MaybeNonEmptyBackArrow: Name "<-" Term NonEmptyBackArrowSeq | /* Empty */;
+NonEmptyBackArrowSeq: "," MaybeNonEmptyBackArrow | /* Empty */;
