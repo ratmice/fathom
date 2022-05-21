@@ -1,0 +1,73 @@
+[[parsers]]
+l_file = "fathom/src/surface/lexer.l"
+y_file = "fathom/src/surface/grammar.y"
+extension = "fathom"
+yacc_kind = {"Original" = "NoAction"}
+
+[[tests]]
+dir =  "tests/fail/parse"
+pass = false
+
+[[tests]]
+dir = "tests/succeed/"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/ann"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/arrow"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/format-deref"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/format-overlap"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/format-record"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/format-repr"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/fun-elim"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/fun-literal"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/fun-type"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/hole"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/let"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/match"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/numeric-literal"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/record-elim"
+pass = true
+
+[[tests]]
+dir = "tests/succeed/record-type"
+pass = true
